@@ -1,14 +1,10 @@
 name: graphite
 prefix: ""
 
-mgmt:
-  network: graphite
-
-
 
 topology:
   kinds:
-    nokia_srlinux:
+    srl:
       image: ghcr.io/nokia/srlinux:23.7.2
     vr-sros:
       image: registry.srlinux.dev/pub/vr-sros:23.10.R3
@@ -25,7 +21,7 @@ topology:
       image: netreplica/graphite:webssh2
       env:
         GRAPHITE_DEFAULT_TYPE: clab
-        GRAPHITE_DEFAULT_TOPO: POC-REMIP
+        GRAPHITE_DEFAULT_TOPO: graphite
         CLAB_SSH_CONNECTION: ${SSH_CONNECTION}
       binds:
         - .:/htdocs/clab
@@ -44,91 +40,101 @@ topology:
       kind: vr-sros
       image: registry.srlinux.dev/pub/vr-sros:23.3.R1
       type: sr-1
+      ports:
+        - 58231:22/tcp
+        - 57431:50052
+        - 57031:80/tcp
       labels:
-        graph-level: 3
+        graph-level: 1
         graph-icon: router
+
     sr200:
       kind: vr-sros
       image: registry.srlinux.dev/pub/vr-sros:23.3.R1
       type: sr-1
       labels:
-        graph-level: 3
+        graph-level: 1
         graph-icon: router
+
 # DC1-Lx IP Fabric
     IXR110:
       kind: srl
       #image: srlinux
       type: ixrd3l
       labels:
-        graph-level: 4
+        graph-level: 2
         graph-icon: switch
-        
+
     IXR111:
       kind: srl
       #image: srlinux
       type: ixrd3l
       labels:
-        graph-level: 4
+        graph-level: 2
         graph-icon: switch
-        
+
     IXR120:
       kind: srl
       #image: srlinux
       type: ixrd2l
       labels:
-        graph-level: 5
+        graph-level: 3
         graph-icon: switch
-        
+
     IXR121:
       kind: srl
       #image: srlinux
       type: ixrd2l
       labels:
-        graph-level: 5
+        graph-level: 3
         graph-icon: switch
-        
-# DC1-Lx IP Fabric
+
+# DC2-oPorto IP Fabric
     IXR220:
       kind: srl
       #image: srlinux
       type: ixrd2l
       labels:
-        graph-level: 5
+        graph-level: 3
         graph-icon: switch
-        
+
     IXR221:
       kind: srl
       #image: srlinux
       type: ixrd2l
       labels:
-        graph-level: 5
+        graph-level: 3
         graph-icon: switch
-        
+
 # Servers / SR-1 to emulate servers
     srv130:
       kind: vr-sros
       type: sr-1
       labels:
-        graph-level: 6
+        graph-level: 4
         graph-icon: host
+
     srv140:
       kind: vr-sros
       type: sr-1
       labels:
-        graph-level: 6
+        graph-level: 2
         graph-icon: host
+
     srv141:
       kind: vr-sros
       type: sr-1
       labels:
-        graph-level: 6
+        graph-level: 4
         graph-icon: host
+
     srv230:
       kind: vr-sros
       type: sr-1
       labels:
         graph-level: 6
         graph-icon: host
+
   links:
 # SR100
     - endpoints: ["sr100:eth1", "sr200:eth1"]
@@ -153,3 +159,4 @@ topology:
     - endpoints: ["IXR220:e1-2", "srv230:eth1"]
     - endpoints: ["IXR221:e1-3", "srv141:eth2"]
     - endpoints: ["IXR221:e1-2", "srv230:eth2"]
+
